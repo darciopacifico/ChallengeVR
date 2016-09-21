@@ -1,0 +1,17 @@
+{
+  "foundProperties": 1,
+  "properties": [
+    {
+      "id": 34,
+      "title": "Imóvel código 34, com 4 quartos e 3 banheiros",
+      "price": 1250000,
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      "x": 999,
+      "y": 333,
+      "beds": 4,
+      "baths": 3,
+      "squareMeters": 237,
+      "provinces" : ["Scavy", "Gode"]
+    }
+  ]
+}
