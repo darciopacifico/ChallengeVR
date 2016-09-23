@@ -1,10 +1,16 @@
 package com.vr.challenge
 
-import akka.actor.{ActorSystem, Props}
+import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.io.IO
 import com.typesafe.config.ConfigFactory
-import com.vr.challenge.actor.spray.APIFrontActor
+import com.vr.challenge.actor.repo.PropertyRepoActor
+import com.vr.challenge.actor.spray.RestInterface
+import com.vr.challenge.protocol.PropertyProtocol._
+import org.json4s._
+import org.json4s.jackson.JsonMethods._
 import spray.can.Http
+
+import scala.io.Source
 
 /**
  * Created by darcio
@@ -12,14 +18,33 @@ import spray.can.Http
 object Boot {
   implicit val system = ActorSystem()
   val config = ConfigFactory.load()
+
+
   /**
    *
    * @param args
    */
   def main(args: Array[String]) {
 
-    val sprayActor = system.actorOf(Props[APIFrontActor], name = "spray")
+    val propLot: PropertyLot = loadPropertyLot
+    val repoActor: ActorRef = system.actorOf(Props(new PropertyRepoActor(propLot)))
+
+    val sprayActor = system.actorOf(Props(new RestInterface(repoActor)), name = "spray")
     IO(Http) ! Http.Bind(sprayActor, interface = config.getString("spray.host"), port = config.getInt("spray.port"))
   }
 
+  /**
+   * Dummy load of property lot
+   * @return
+   */
+  def loadPropertyLot: PropertyLot = {
+
+    val streamProperties = getClass.getResourceAsStream("/properties.json")
+    val sourceProperties = Source.fromInputStream(streamProperties)
+    val hugePropJson = sourceProperties.getLines().mkString
+    val parsed: JValue = parse(hugePropJson)
+
+    val propLot = parsed.extract[PropertyLot]
+    propLot
+  }
 }

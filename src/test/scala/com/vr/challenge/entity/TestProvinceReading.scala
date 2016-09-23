@@ -9,8 +9,7 @@ import scala.io.Source
  * Created by darcio on 9/20/16.
  */
 class TestProvinceReading extends FlatSpec with Matchers {
-
-  implicit val formats = org.json4s.DefaultFormats
+  import com.vr.challenge.protocol.PropertyProtocol._
 
   import org.json4s.jackson.JsonMethods._
 
