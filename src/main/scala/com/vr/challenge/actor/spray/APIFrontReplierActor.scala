@@ -10,13 +10,12 @@ import scala.concurrent.duration.FiniteDuration
 import scala.language.postfixOps
 
 /**
- * Route every possible reply to request context origin. Treat operation timeout too
+ * Route every possible reply to request context origin. Treat operation timeout
  * Created by darcio
  */
 class APIFrontReplierActor(reqCtx: RequestContext, timeout: FiniteDuration) extends Actor with HttpService with RespondWithDirectives with RouteDirectives with SprayJsonSupport {
   val actorRefFactory: ActorContext = context
   implicit val ec = context.system.dispatcher
-
 
   import com.vr.challenge.protocol.PropertyProtocol._
 

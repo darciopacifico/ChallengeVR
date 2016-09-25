@@ -20,13 +20,13 @@ class TestProvinceReading extends FlatSpec with Matchers {
     val strJson = stream.getLines().mkString
     val parsed: JValue = parse(strJson)
 
-    val mapBoundaries = parsed.extract[Map[String, Province]]
+    val mapProvinces: Map[String, Province] = parsed.extract[Map[String, Province]]
 
-    assert(mapBoundaries.size === 6)
+    assert(mapProvinces.size === 6)
 
-    mapBoundaries.keys.toSet should contain theSameElementsAs Vector("Gode", "Scavy", "Ruja", "Jaby", "Groola", "Nova")
+    mapProvinces.keys.toSet should contain theSameElementsAs Vector("Gode", "Scavy", "Ruja", "Jaby", "Groola", "Nova")
 
-    val provJaby = mapBoundaries("Jaby")
+    val provJaby = mapProvinces("Jaby")
     assert(provJaby.boundaries.bottomRight === Corner(1400, 500))
     assert(provJaby.boundaries.upperLeft === Corner(1100, 1000))
 

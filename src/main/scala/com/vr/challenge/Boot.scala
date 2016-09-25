@@ -1,10 +1,9 @@
 package com.vr.challenge
 
-import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.actor.{ActorSystem, Props}
 import akka.io.IO
 import com.typesafe.config.ConfigFactory
-import com.vr.challenge.actor.repo.RepoFacadeActor
-import com.vr.challenge.actor.spray.PropertyRESTActor
+import com.vr.challenge.actor.spray.APIFrontActor
 import com.vr.challenge.protocol.PropertyProtocol._
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
@@ -25,7 +24,7 @@ object Boot {
    */
   def main(args: Array[String]) {
 
-    val sprayActor = system.actorOf(Props(new PropertyRESTActor(loadPropertyLot)), name = "PropertyRestAPI")
+    val sprayActor = system.actorOf(Props(new APIFrontActor(loadPropertyLot, loadMapProvinces)), name = "PropertyRestAPI")
 
     IO(Http) ! Http.Bind(sprayActor, interface = config.getString("spray.host"), port = config.getInt("spray.port"))
 
@@ -45,4 +44,19 @@ object Boot {
     val propLot = parsed.extract[PropertyLot]
     propLot
   }
+
+
+  def loadMapProvinces: Map[String, Province] = {
+
+    val res = getClass.getResourceAsStream("/provinces.json")
+    val stream = Source.fromInputStream(res)
+    val strJson = stream.getLines().mkString
+    val parsed: JValue = parse(strJson)
+
+    val mapProvinces: Map[String, Province] = parsed.extract[Map[String, Province]]
+
+    mapProvinces
+  }
+
+
 }

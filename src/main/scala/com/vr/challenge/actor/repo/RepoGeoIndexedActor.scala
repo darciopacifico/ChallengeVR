@@ -31,7 +31,6 @@ class RepoGeoIndexedActor(repoActor: ActorRef, initialProperties: PropertyLot) e
       pipe(Future {
 
         val flattenResults = geolocationProperties.range(Array(ax, ay), Array(bx, by)).asScala.toList.flatMap(p => p)
-
         PropertyByGeoReply(PropertyLot(flattenResults.size, flattenResults))
 
       }).to(replyTo)

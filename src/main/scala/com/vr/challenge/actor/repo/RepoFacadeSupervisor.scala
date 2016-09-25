@@ -3,7 +3,9 @@ package com.vr.challenge.actor.repo
 import akka.actor.SupervisorStrategy.{Restart, Stop}
 import akka.actor._
 import akka.routing.RoundRobinPool
-import com.vr.challenge.protocol.PropertyProtocol.PropertyLot
+import com.vr.challenge.protocol.PropertyProtocol.{Province, PropertyLot}
+
+import scala.collection.Map
 
 /**
  * Define the policies for supervision, routing and persistence of actors
@@ -12,8 +14,8 @@ import com.vr.challenge.protocol.PropertyProtocol.PropertyLot
  */
 trait RepoFacadeSupervisor extends Actor with ActorLogging {
 
-  def createStorageActor(lot: PropertyLot): ActorRef = {
-    context.actorOf(Props(new RepoStorageActor(lot))
+  def createStorageActor(lot: PropertyLot, mapProvinces: Map[String, Province]): ActorRef = {
+    context.actorOf(Props(new RepoStorageActor(lot, mapProvinces))
       .withRouter(
         RoundRobinPool(
           nrOfInstances = 1,

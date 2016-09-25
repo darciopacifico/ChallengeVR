@@ -3,13 +3,15 @@ package com.vr.challenge.actor.repo
 import akka.actor._
 import com.vr.challenge.protocol.PropertyProtocol._
 
+import scala.collection.Map
+
 /**
  * Facade point for Property repository and indexes
  * Created by darcio on 9/20/16.
  */
-class RepoFacadeActor(val propertyLot: PropertyLot) extends RepoFacadeSupervisor {
+class RepoFacadeActor(val propertyLot: PropertyLot, val mapProvinces: Map[String, Province]) extends RepoFacadeSupervisor {
 
-  val storageActor = createStorageActor(propertyLot)
+  val storageActor = createStorageActor(propertyLot, mapProvinces)
   val geoIndexedActor = createGeoIndexedActor(storageActor, propertyLot)
 
   /**

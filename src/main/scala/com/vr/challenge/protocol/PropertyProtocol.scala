@@ -36,7 +36,7 @@ object PropertyProtocol {
 
   case class Province(boundaries: Boundaries)
   case class Boundaries(upperLeft: Corner, bottomRight: Corner)
-  case class Corner(x: BigDecimal, y: BigDecimal)
+  case class Corner(x: Int, y: Int)
 
 
   case class Property(
@@ -48,13 +48,17 @@ object PropertyProtocol {
                       title: String,
                       price: BigDecimal,
                       description: String,
-                      lat: BigDecimal,
-                      long: BigDecimal,
+                      lat: Int,
+                      long: Int,
                       beds: Int,
                       baths: Int,
                       squareMeters: Double,
                       provinces: Option[List[String]]
-                     )
+                     ){
+
+
+
+  }
 
   case class PropertyLot(totalProperties: Int,
                          properties: List[Property])

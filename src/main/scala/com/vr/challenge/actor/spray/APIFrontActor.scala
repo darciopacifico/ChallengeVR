@@ -17,8 +17,8 @@ import scala.language.postfixOps
  * (Not Spray-test-kit testable) Http actor implementation
  * @param lot
  */
-class PropertyRESTActor(lot: PropertyLot) extends HttpServiceActor with RestApi {
-  val repoFacadeActor = context.actorOf(Props(new RepoFacadeActor(lot)))
+class APIFrontActor(lot: PropertyLot, mapProvinces: Map[String, Province]) extends HttpServiceActor with APIFrontActorTrait {
+  val repoFacadeActor = context.actorOf(Props(new RepoFacadeActor(lot, mapProvinces)))
   val actorContext = context
 
   def receive = runRoute(routes)
@@ -28,7 +28,7 @@ class PropertyRESTActor(lot: PropertyLot) extends HttpServiceActor with RestApi 
  * Testable trait containing the route for Rest API.
  * Spray http actor to handle requests.
  */
-trait RestApi extends HttpService {
+trait APIFrontActorTrait extends HttpService {
   val DEFAULT_REQUEST_TIMEOUT: FiniteDuration = FiniteDuration(10, TimeUnit.SECONDS)
   implicit val timeout = Timeout(10 seconds)
 
