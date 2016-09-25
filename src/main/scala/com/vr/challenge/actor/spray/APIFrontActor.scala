@@ -4,57 +4,63 @@ import java.util.concurrent.TimeUnit
 
 import akka.actor._
 import akka.util.Timeout
+import com.vr.challenge.actor.repo.RepoFacadeActor
+import com.vr.challenge.protocol.PropertyProtocol._
 import spray.httpx.SprayJsonSupport._
 import spray.routing._
 
+import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-class RestInterface(repoAct: ActorRef) extends HttpServiceActor with RestApi {
-  val repoActor = repoAct
+/**
+ * (Not Spray-test-kit testable) Http actor implementation
+ * @param lot
+ */
+class PropertyRESTActor(lot: PropertyLot) extends HttpServiceActor with RestApi {
+  val repoFacadeActor = context.actorOf(Props(new RepoFacadeActor(lot)))
   val actorContext = context
 
   def receive = runRoute(routes)
 }
 
 /**
- * Spray http actor to handle requests
+ * Testable trait containing the route for Rest API.
+ * Spray http actor to handle requests.
  */
 trait RestApi extends HttpService {
-  //actor: Actor =>
-  val actorContext: ActorRefFactory
-  val repoActor: ActorRef
-
   val DEFAULT_REQUEST_TIMEOUT: FiniteDuration = FiniteDuration(10, TimeUnit.SECONDS)
-
-  import com.vr.challenge.protocol.PropertyProtocol._
-
   implicit val timeout = Timeout(10 seconds)
 
+  val actorContext: ActorRefFactory
+  val repoFacadeActor: ActorRef
+
+  /**
+   * REST routing patterns
+   */
   def routes: Route = sealRoute(
     pathPrefix("properties") {
       post {
         entity(as[Property]) { property => requestContext =>
-          repoActor ! PropertyCreate(property, replyToZuba(requestContext))
+          repoFacadeActor ! PropertyCreate(property, replyTo(requestContext))
         }
       } ~
-        path(Segment) { id => requestContext =>
-          repoActor ! PropertyById(id, replyToZuba(requestContext))
-        } ~
-        parameters('ax.as[Int], 'ay.as[Int], 'bx.as[Int], 'by.as[Int]) { (ax, ay, bx, by) =>
-          get { ctx =>
-            repoActor ! PropertyByGeo(ax, ay, bx, by, replyToZuba(ctx))
-          }
+      path(IntNumber) { id => requestContext =>
+        repoFacadeActor ! PropertyById(id, replyTo(requestContext))
+      } ~
+      parameters('ax.as[Int], 'ay.as[Int], 'bx.as[Int], 'by.as[Int]) { (ax, ay, bx, by) =>
+        get { ctx =>
+          repoFacadeActor ! PropertyByGeo(ax, ay, bx, by, replyTo(ctx))
         }
+      }
     })
-
 
   /**
    * Create a dedicated actor to handle the reply to the request context using a default timeout
    * @param requestContext
    * @return
    */
-  def replyToZuba(requestContext: RequestContext): ActorRef = replyToResponder(requestContext, DEFAULT_REQUEST_TIMEOUT)
+  def replyTo(requestContext: RequestContext): ActorRef = replyTo(requestContext, DEFAULT_REQUEST_TIMEOUT)
 
   /**
    * Create dedicated actor to handle the reply to the request context using a given timeout
@@ -62,5 +68,5 @@ trait RestApi extends HttpService {
    * @param timeout
    * @return
    */
-  def replyToResponder(requestContext: RequestContext, timeout: FiniteDuration): ActorRef = actorContext.actorOf(Props(new APIFrontReplierActor(requestContext, timeout)))
+  def replyTo(requestContext: RequestContext, timeout: FiniteDuration): ActorRef = actorContext.actorOf(Props(new APIFrontReplierActor(requestContext, timeout)))
 }

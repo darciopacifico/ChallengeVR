@@ -21,30 +21,30 @@ object PropertyProtocol {
 
   import spray.json._
 
+
   case class PropertyCreate(prop: Property, replyTo: ActorRef)
-
-  case class PropertyCreationError(err: Exception)
-
+  case class PropertyCreationError(err: Throwable)
   case object PropertyCreated
-
-  case class PropertyById(id: String, replyTo: ActorRef)
-
+  case class PropertyById(id: Int, replyTo: ActorRef)
   case class PropertyByIdReply(optProp: Option[Property])
-
   case class PropertyByGeo(ax: Int, ay: Int, bx: Int, by: Int, replyTo: ActorRef)
-
   case class PropertyByGeoReply(propertyLot: PropertyLot)
-
   case object RequestTimeout
 
+  case class SubscribeForRepoEvents(listenerActor:ActorRef)
+  case class NewPropertyEvent(property: Property)
 
   case class Province(boundaries: Boundaries)
-
+  case class Boundaries(upperLeft: Corner, bottomRight: Corner)
   case class Corner(x: BigDecimal, y: BigDecimal)
 
-  case class Boundaries(upperLeft: Corner, bottomRight: Corner)
 
-  case class Property(id: Option[Int],
+  case class Property(
+                      /*
+                      THIS Integer APPROACH for PKs IS NOT RECOMMENDED!
+                      Don't spread Integers as ids. Use UUID instead!
+                       */
+                      id: Option[Int],
                       title: String,
                       price: BigDecimal,
                       description: String,

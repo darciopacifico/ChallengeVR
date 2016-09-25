@@ -3,7 +3,7 @@ package com.vr.challenge.entity
 import java.util.concurrent.TimeUnit
 
 import akka.actor.{ActorSystem, ActorRef, Props}
-import com.vr.challenge.actor.repo.PropertyRepoActor
+import com.vr.challenge.actor.repo.RepoFacadeActor
 import com.vr.challenge.actor.spray.RestApi
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
@@ -29,7 +29,7 @@ class APITest extends Specification with Specs2RouteTest with HttpService with R
 
   val actorContext = system
 
-  override val repoActor: ActorRef = system.actorOf(Props(new PropertyRepoActor(loadPropertyLot)))
+  override val repoFacadeActor: ActorRef = system.actorOf(Props(new RepoFacadeActor(loadPropertyLot)))
 
   val smallRoute =
     get {
@@ -66,14 +66,14 @@ class APITest extends Specification with Specs2RouteTest with HttpService with R
     }
     "return another a Property By Id" in {
       Get("/properties/123") ~> routes ~> check {
-        responseAs[Property].price === 100
+        responseAs[Property].price === 347000
       }
     }
-    "return another all properties around some area" in {
-      Get("/properties?ax=22&ay=33&bx=44&by=55") ~> routes ~> check {
+    "return another all 114 properties around ax=122&ay=344&bx=252&by=474" in {
+      Get("/properties?ax=122&ay=344&bx=252&by=474") ~> routes ~> check {
         val propertyLot: PropertyLot = responseAs[PropertyLot]
-        propertyLot.totalProperties===1
-        propertyLot.properties(0).price === 100
+        propertyLot.totalProperties===114
+        propertyLot.properties.head.price === 641000
       }
     }
   }
