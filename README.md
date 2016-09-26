@@ -5,7 +5,7 @@ Emulates a simple REST service for Property Registration. Uses Scala, Spray and 
 
 ## Design
 
-### -- REST Layer -- :
+### -REST Layer- :
 
 **APIFrontActor**: Create a dedicated APIFrontReplierActor to process the future response. Translates the REST requests into business layer messages, routing them to the RepoFacadeActor along with a fresh new reference to a APIFrontReplierActor.
 
