@@ -21,4 +21,5 @@ Emulates a simple REST service for Property Registration. Uses Scala, Spray and 
 
 
 *Actor Messaging and Dependency*
+
 ![](https://raw.githubusercontent.com/darciopacifico/ChallengeVR/master/diagram.png)
