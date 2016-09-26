@@ -4,7 +4,6 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Terminated}
 import akka.pattern.pipe
-import akka.routing.{Routees, GetRoutees, RouterRoutees}
 import com.vr.challenge.protocol.PropertyProtocol
 import com.vr.challenge.protocol.PropertyProtocol._
 
@@ -16,9 +15,13 @@ import scala.util.{Failure, Success, Try}
  *
  * Created by darcio on 9/24/16.
  */
-class RepoStorageActor(val initialProperties: PropertyLot, val mapProvinces: Map[String, Province]) extends Actor with ActorLogging {
+class RepoStorageActor(val initialProperties: PropertyLot, val mapProvince: Map[String, Province]) extends Actor with ActorLogging {
 
+
+  //due to small amount of provinces i'll not try to optimize the search
+  val listProvinces: List[(String, Province)] = this.mapProvince.toList
   val mapPropById: mutable.Map[Int, Property] = loadMapOfproperties(initialProperties)
+
   val idSequence = new AtomicInteger(mapPropById.keys.max)
 
   val setListeners = mutable.Set[ActorRef]()
@@ -40,11 +43,11 @@ class RepoStorageActor(val initialProperties: PropertyLot, val mapProvinces: Map
 
         Try {
           val newPropWithId = insertNewProperty(property)
-          setListeners.foreach(g =>
-            g ! NewPropertyEvent(newPropWithId)
-          )
+          setListeners.foreach(_ ! NewPropertyEvent(newPropWithId))
+          newPropWithId.id.get
+
         } match {
-          case Success(_) => PropertyCreated
+          case Success(id) => PropertyCreated(id)
           case Failure(err) => PropertyCreationError(err)
         }
 
@@ -65,19 +68,41 @@ class RepoStorageActor(val initialProperties: PropertyLot, val mapProvinces: Map
    * @return
    */
   def loadMapOfproperties(lot: PropertyLot) =
-    mutable.Map[Int, Property]() ++ lot.properties.map(p => p.id.get -> p).toMap
+    mutable.Map[Int, Property]() ++ lot.properties.map(p => p.id.get -> p.copy(provinces = Some(getProvinces(p.lat, p.long)))).toMap
+
 
   /**
-   *
-   * @param property
+   * Get the provinces for a given lat long data
+   * @param lat
+   * @param long
+   * @return
    */
-  def validateProperty(property: Property) = {
-    //0 <= x <= 1400 e 0 <= y <= 1000
+  def getProvinces(lat: Int, long: Int): List[String] = {
+    def getProvinces(listProvinces: List[(String, Province)], agg: List[String]): List[String] = {
+      listProvinces match {
+        case (name, province) :: ps =>
+          val b = province.boundaries
 
-    if (property.lat < 0 || property.lat > 1400 || property.long < 0 || property.long > 1000)
-      throw new RepoPropertyException("Invalid lat long properties definitions!")
+          val newAgg = if (
 
+            lat  >= b.upperLeft.x && lat <= b.bottomRight.x   &&
+            long <= b.upperLeft.y && long >= b.bottomRight.y
+
+          ) {
+
+            name :: agg
+          } else agg
+
+          getProvinces(ps, newAgg)
+
+        case Nil =>
+          agg
+      }
+    }
+
+    getProvinces(listProvinces, Nil)
   }
+
 
   /**
    * Create the new property and store locally
@@ -86,10 +111,12 @@ class RepoStorageActor(val initialProperties: PropertyLot, val mapProvinces: Map
    */
   def insertNewProperty(property: Property): PropertyProtocol.Property = {
 
-    validateProperty(property)
+    //proper
 
     val newId = idSequence.incrementAndGet()
-    val newProp = property.copy(id = Some(newId))
+    val provinces: List[String] = getProvinces(property.lat, property.long)
+    val newProp = property.copy(id = Some(newId), provinces = Some(provinces))
+
     mapPropById(newId) = newProp
     newProp
   }

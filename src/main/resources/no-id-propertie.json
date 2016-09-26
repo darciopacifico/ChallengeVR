@@ -1,10 +1,8 @@
-{
-  "lat": 222,
+{ "lat": 222,
   "long": 444,
   "title": "Imóvel código 1, com 5 quartos e 4 banheiros",
   "price": 1250000,
   "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-  "beds": 4,
-  "baths": 3,
-  "squareMeters": 210
-}
+  "beds": 3,
+  "baths": 2,
+  "squareMeters": 200}

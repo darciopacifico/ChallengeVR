@@ -29,7 +29,7 @@ class APIFrontActor(lot: PropertyLot, mapProvinces: Map[String, Province]) exten
  * Spray http actor to handle requests.
  */
 trait APIFrontActorTrait extends HttpService {
-  val DEFAULT_REQUEST_TIMEOUT: FiniteDuration = FiniteDuration(10, TimeUnit.SECONDS)
+  val DEFAULT_REQUEST_TIMEOUT: FiniteDuration = FiniteDuration(3, TimeUnit.SECONDS)
   implicit val timeout = Timeout(10 seconds)
 
   val actorContext: ActorRefFactory

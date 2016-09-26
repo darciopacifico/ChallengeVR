@@ -1,16 +1,7 @@
 package com.vr.challenge.protocol
 
-import java.text.SimpleDateFormat
-import java.util.Date
-
 import akka.actor.ActorRef
 import org.json4s._
-import org.json4s.ext.JavaTypesSerializers
-import org.json4s.jackson.JsonMethods._
-import org.json4s.jackson.Serialization
-import org.json4s.jackson.Serialization._
-import spray.http.{HttpEntity, HttpCharsets}
-import spray.httpx.Json4sJacksonSupport
 
 /**
  * Basic protocol messages for actor layer
@@ -23,40 +14,49 @@ object PropertyProtocol {
 
 
   case class PropertyCreate(prop: Property, replyTo: ActorRef)
+
   case class PropertyCreationError(err: Throwable)
-  case object PropertyCreated
+
+  case class PropertyCreated(id: Int)
+
   case class PropertyById(id: Int, replyTo: ActorRef)
+
   case class PropertyByIdReply(optProp: Option[Property])
+
   case class PropertyByGeo(ax: Int, ay: Int, bx: Int, by: Int, replyTo: ActorRef)
+
   case class PropertyByGeoReply(propertyLot: PropertyLot)
+
   case object RequestTimeout
 
-  case class SubscribeForRepoEvents(listenerActor:ActorRef)
+  case class SubscribeForRepoEvents(listenerActor: ActorRef)
+
   case class NewPropertyEvent(property: Property)
 
   case class Province(boundaries: Boundaries)
+
   case class Boundaries(upperLeft: Corner, bottomRight: Corner)
+
   case class Corner(x: Int, y: Int)
 
 
-  case class Property(
-                      /*
-                      THIS Integer APPROACH for PKs IS NOT RECOMMENDED!
-                      Don't spread Integers as ids. Use UUID instead!
-                       */
-                      id: Option[Int],
+  case class Property(id: Option[Int],
                       title: String,
                       price: BigDecimal,
                       description: String,
-                      lat: Int,
-                      long: Int,
+                      lat: Int,  //x
+                      long: Int, //y
                       beds: Int,
                       baths: Int,
                       squareMeters: Double,
-                      provinces: Option[List[String]]
-                     ){
+                      provinces: Option[List[String]]) {
 
+    require(beds >= 1 && beds <= 5, "The property should have between 1 and 5 beds")
+    require(baths >= 1 && baths <= 4, "The property should have between 1 and 5 baths")
+    require(squareMeters >= 20 && squareMeters <= 240, "The property should have between 20 and 240 square meters")
 
+    require(lat >= 0 && lat <= 1400, "Lat is out of boundaries (0 to 1400)")
+    require(long >= 0 && long <= 1000, "Long is out of boundaries (0 to 1000)")
 
   }
 
@@ -73,30 +73,6 @@ object PropertyProtocol {
 
   object TestProtocol2 extends DefaultJsonProtocol
 
-
-  object CustomerConversions {
-
-    implicit val liftJsonFormats = new Formats {
-      val dateFormat = new DateFormat {
-        val sdf = new SimpleDateFormat("yyyy-MM-dd")
-
-        def parse(s: String): Option[Date] = try {
-          Some(sdf.parse(s))
-        } catch {
-          case e: Exception => None
-        }
-
-        def format(d: Date): String = sdf.format(d)
-      }
-    }
-
-  }
-
   implicit val formarttt = DefaultFormats
-
-  implicit def HttpEntityToProperty(httpEntity: HttpEntity): Property = Serialization.read[Property](httpEntity.asString(HttpCharsets.`UTF-8`))
-
-  implicit def HttpEntityToPropertyLot(httpEntity: HttpEntity): PropertyLot = Serialization.read[PropertyLot](httpEntity.asString(HttpCharsets.`UTF-8`))
-
 
 }

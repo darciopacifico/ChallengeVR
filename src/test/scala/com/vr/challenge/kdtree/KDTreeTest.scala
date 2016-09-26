@@ -1,6 +1,7 @@
 
 package com.vr.challenge.kdtree
 
+import com.vr.challenge.Boot
 import com.vr.challenge.protocol.PropertyProtocol.{Property, PropertyLot}
 import edu.wlu.cs.levy.CG.KDTree
 import org.json4s._
@@ -21,11 +22,7 @@ class KDTreeTest extends FlatSpec with Matchers {
   implicit val df = org.json4s.DefaultFormats
 
   val kdTree = new KDTree[mutable.Set[Property]](2)
-  val streamProperties = getClass.getResourceAsStream("/properties.json")
-  val sourceProperties = Source.fromInputStream(streamProperties)
-  val hugePropJson = sourceProperties.getLines().mkString
-  val parsed: JValue = parse(hugePropJson)
-  val propLot = parsed.extract[PropertyLot]
+  val propLot = Boot.loadPropertyLot
 
   assert(propLot.totalProperties === propLot.properties.size)
   assert(propLot.properties.size > 100)
@@ -53,6 +50,12 @@ class KDTreeTest extends FlatSpec with Matchers {
   }
 
 
+  /**
+   * Get set from KDtree for tests
+   * @param kdTree
+   * @param coords
+   * @return
+   */
   def getSetOfProperties(kdTree: KDTree[mutable.Set[Property]], coords: Array[Double]) =
     kdTree.search(coords) match {
       case null =>

@@ -4,7 +4,7 @@ import spray.httpx.SprayJsonSupport
 import spray.routing.directives.{RouteDirectives, RespondWithDirectives}
 import spray.routing.{HttpService, HttpServiceActor, RequestContext}
 import akka.actor.{Actor, ActorLogging, PoisonPill, _}
-import spray.http.{HttpEntity, HttpResponse, StatusCodes}
+import spray.http.{MediaTypes, HttpEntity, HttpResponse, StatusCodes}
 
 import scala.concurrent.duration.FiniteDuration
 import scala.language.postfixOps
@@ -30,8 +30,8 @@ class APIFrontReplierActor(reqCtx: RequestContext, timeout: FiniteDuration) exte
       reqCtx.complete(property)
       finishActor
 
-    case PropertyCreated =>
-      reqCtx.complete(StatusCodes.OK)
+    case PropertyCreated(id) =>
+      reqCtx.complete(StatusCodes.OK, HttpEntity(MediaTypes.`application/json`, "" + id))
       finishActor
 
     case PropertyCreationError(err) =>

@@ -9,6 +9,8 @@ import com.vr.challenge.actor.spray.APIFrontActorTrait
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
 import org.specs2.mutable.Specification
+import spray.http.StatusCodes._
+import spray.http.{StatusCodes, StatusCode, HttpEntity, MediaTypes}
 import spray.routing.HttpService
 import spray.testkit.Specs2RouteTest
 
@@ -28,6 +30,7 @@ class APITest extends Specification with Specs2RouteTest with HttpService with A
 
   def actorRefFactory = system
 
+  var strNewId: String = "666"
   val actorContext = system
 
   override val repoFacadeActor: ActorRef = system.actorOf(Props(new RepoFacadeActor(Boot.loadPropertyLot, Boot.loadMapProvinces)))
@@ -60,14 +63,14 @@ class APITest extends Specification with Specs2RouteTest with HttpService with A
         responseAs[String] must contain("hello")
       }
     }
-    "return a Property By Id" in {
-      Get("/properties/123") ~> routes ~> check {
-        responseAs[String] must contain("baths")
-      }
-    }
     "return another a Property By Id" in {
       Get("/properties/123") ~> routes ~> check {
         responseAs[Property].price === 347000
+      }
+    }
+    "return 404 for an inexistent property id" in {
+      Get("/properties/99999") ~> routes ~> check {
+        status===NotFound
       }
     }
     "return another all 114 properties around ax=122&ay=344&bx=252&by=474" in {
@@ -77,7 +80,47 @@ class APITest extends Specification with Specs2RouteTest with HttpService with A
         propertyLot.properties.head.price === 641000
       }
     }
+    "insert a new property " in {
+      Post("/properties",
+        HttpEntity(MediaTypes.`application/json`,
+          """
+            |{ "lat": 222,
+            |  "long": 444,
+            |  "title": "teste criacao de imovel - post com spray test kit",
+            |  "price": 1250000,
+            |  "description": "desc: teste criacao de imovel - post com spray test kit",
+            |  "beds": 3,
+            |  "baths": 2,
+            |  "squareMeters": 200}
+          """.stripMargin)) ~> routes ~> check {
+
+        strNewId = responseAs[String]
+        assert(strNewId.toInt > 0)
+        status === OK
+        handled === true
+      }
+      Get(("/properties/"+strNewId)) ~> routes ~> check {
+        val property: Property = responseAs[Property]
+        property.price === 1250000
+        property.title === "teste criacao de imovel - post com spray test kit"
+      }
+    }
+    "return 400 for an invalid property " in {
+      Post("/properties",
+        HttpEntity(MediaTypes.`application/json`,
+          """
+            |{ "lat": 2223,
+            |  "long": 4434,
+            |  "title": "teste criacao de imovel - post com spray test kit",
+            |  "price": 1250000,
+            |  "description": "desc: teste criacao de imovel - post com spray test kit",
+            |  "beds": 33,
+            |  "baths": 23,
+            |  "squareMeters": 2030}
+          """.stripMargin)) ~> routes ~> check {
+        status === BadRequest
+        handled === true
+      }
+    }
   }
-
-
 }
