@@ -18,7 +18,7 @@ import scala.language.postfixOps
  * @param lot
  */
 class APIFrontActor(lot: PropertyLot, mapProvinces: Map[String, Province]) extends HttpServiceActor with APIFrontActorTrait {
-  val repoFacadeActor = context.actorOf(Props(new RepoFacadeActor(lot, mapProvinces)))
+  val repoFacadeActor = context.actorOf(Props(new RepoFacadeActor(lot, mapProvinces)),name = "repoFacadeActor")
   val actorContext = context
 
   def receive = runRoute(routes)
@@ -60,7 +60,8 @@ trait APIFrontActorTrait extends HttpService {
    * @param requestContext
    * @return
    */
-  def replyTo(requestContext: RequestContext): ActorRef = replyTo(requestContext, DEFAULT_REQUEST_TIMEOUT)
+  def replyTo(requestContext: RequestContext): ActorRef =
+    replyTo(requestContext, DEFAULT_REQUEST_TIMEOUT)
 
   /**
    * Create dedicated actor to handle the reply to the request context using a given timeout
@@ -68,5 +69,6 @@ trait APIFrontActorTrait extends HttpService {
    * @param timeout
    * @return
    */
-  def replyTo(requestContext: RequestContext, timeout: FiniteDuration): ActorRef = actorContext.actorOf(Props(new APIFrontReplierActor(requestContext, timeout)))
+  def replyTo(requestContext: RequestContext, timeout: FiniteDuration): ActorRef =
+    actorContext.actorOf(Props(new APIFrontReplierActor(requestContext, timeout)))
 }

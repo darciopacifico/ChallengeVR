@@ -24,7 +24,7 @@ object Boot {
    */
   def main(args: Array[String]) {
 
-    val sprayActor = system.actorOf(Props(new APIFrontActor(loadPropertyLot, loadMapProvinces)), name = "PropertyRestAPI")
+    val sprayActor = system.actorOf(Props(new APIFrontActor(loadPropertyLot, loadMapProvinces)), name = "APIFrontActor")
 
     IO(Http) ! Http.Bind(sprayActor, interface = config.getString("spray.host"), port = config.getInt("spray.port"))
 

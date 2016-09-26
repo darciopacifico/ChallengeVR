@@ -23,7 +23,7 @@ trait RepoFacadeSupervisor extends Actor with ActorLogging {
             OneForOneStrategy(maxNrOfRetries = 10) {
               case _: ActorInitializationException => Stop
               case _: Exception => Restart
-            })))
+            })),name="RepoStorageActor")
   }
 
   def createGeoIndexedActor(ref: ActorRef, lot: PropertyLot): ActorRef = {
@@ -35,7 +35,7 @@ trait RepoFacadeSupervisor extends Actor with ActorLogging {
             OneForOneStrategy(maxNrOfRetries = 10) {
               case _: ActorInitializationException => Stop
               case _: Exception => Restart
-            })))
+            })),name = "RepoGeoIndexedActor")
   }
 
 }
