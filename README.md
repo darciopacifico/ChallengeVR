@@ -7,7 +7,9 @@ Emulates a simple REST service for Property Registration. Uses Scala, Spray and 
 
 ### REST Layer:
 
-**APIFrontActor**: Create a dedicated APIFrontReplierActor to process the future response to every request. Translates the REST requests into business layer messages, routing them to the RepoFacadeActor along with a fresh new reference to a APIFrontReplierActor.
+**APIFrontActor**: Create dedicateds instances of APIFrontReplierActors, to process the future responses to every request. 
+
+Translates the REST requests into business layer messages, routing them to the RepoFacadeActor along with a fresh new reference to a APIFrontReplierActor.
 
 **APIFrontReplierActor**: Short life cycle actor, sticked to a single RequestContext object. Its single responsability is to wait for the response message from business layer (or its own timeout), translate this into a REST response, and take an actor PoisonPill (literally).
 
