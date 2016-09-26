@@ -20,5 +20,5 @@ Emulates a simple REST service for Property Registration. Uses Scala, Spray and 
 **RepoGeoIndexedActor**: Receive the new properties to be indexed, solve the GetPropertiesByRegion messages, unsing its internal KDTree data structure.
 
 
-Implementação dos serviços com atores.
+*Implementação dos serviços com atores.*
 ![](https://raw.githubusercontent.com/darciopacifico/ChallengeVR/master/diagram.png)
