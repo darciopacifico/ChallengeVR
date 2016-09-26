@@ -106,23 +106,6 @@ class APITest extends Specification with Specs2RouteTest with HttpService with A
         property.provinces.get === List("Scavy")
       }
     }
-    "return 400 for an invalid property " in {
-      Post("/properties",
-        HttpEntity(MediaTypes.`application/json`,
-          """
-            |{ "lat": 223,
-            |  "long": 434,
-            |  "title": "teste criacao de imovel - post com spray test kit",
-            |  "price": 1250000,
-            |  "description": "desc: teste criacao de imovel - post com spray test kit",
-            |  "beds": -1,
-            |  "baths": 0,
-            |  "squareMeters": 203}
-          """.stripMargin)) ~> routes ~> check {
-        status === BadRequest
-        handled === true
-      }
-    }
     "return 400 for an invalid property location " in {
       Post("/properties",
         HttpEntity(MediaTypes.`application/json`,

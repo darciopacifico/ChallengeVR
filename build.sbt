@@ -1,4 +1,3 @@
-
 name := "VRChallenge"
 
 version := "0.1"
@@ -15,9 +14,8 @@ libraryDependencies ++= {
   val akkaVersion       = "2.4.4"
   val sprayVersion      = "1.3.2"
   val json4sV           = "3.3.0"
-  val scalaTestV = "2.2.4"
-  val swaggerV: String = "0.7.2"
-
+  val scalaTestV        = "2.2.4"
+  val swaggerV          = "0.7.2"
   Seq(
     "com.github.swagger-spray" %% "swagger-spray" % swaggerV,
     "com.typesafe.akka"     %% "akka-actor"      % akkaVersion,
@@ -36,9 +34,13 @@ libraryDependencies ++= {
 }
 
 mainClass in Global := Some("com.vr.challenge.Boot")
+
 mainClass in assembly := some("com.vr.challenge.Boot")
+
 assemblyJarName := "VRChallenge.jar"
+
 val meta = """META.INF(.)*""".r
+
 assemblyMergeStrategy in assembly := {
   case PathList("javax", "servlet", xs @ _*) => MergeStrategy.first
   case PathList(ps @ _*) if ps.last endsWith ".html" => MergeStrategy.first
