@@ -53,3 +53,5 @@ build/
 akka-patterns-store/
 activator-sbt-*-shim.sbt
 /logs/
+
+*.odg#
