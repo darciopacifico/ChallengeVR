@@ -1,5 +1,6 @@
 package com.vr.challenge.actor.spray
 
+import spray.http.StatusCodes._
 import spray.httpx.SprayJsonSupport
 import spray.routing.directives.{RouteDirectives, RespondWithDirectives}
 import spray.routing.{HttpService, HttpServiceActor, RequestContext}
@@ -31,15 +32,15 @@ class APIFrontReplierActor(reqCtx: RequestContext, timeout: FiniteDuration) exte
       finishActor
 
     case PropertyCreated(id) =>
-      reqCtx.complete(StatusCodes.OK, HttpEntity(MediaTypes.`application/json`, "" + id))
+      reqCtx.complete(OK, HttpEntity(MediaTypes.`application/json`, "" + id))
       finishActor
 
     case PropertyCreationError(err) =>
-      reqCtx.complete(HttpResponse(status = 500, entity = HttpEntity(s"Error trying to create the Property! (devenv=true) ${err.getMessage()}")))
+      reqCtx.complete(HttpResponse(status = BadRequest, entity = HttpEntity(s"Error trying to create the Property! (devenv=true) ${err.getMessage()}")))
       finishActor
 
     case RequestTimeout =>
-      reqCtx.complete(HttpResponse(status = 408, entity = HttpEntity("Request timeout!")))
+      reqCtx.complete(HttpResponse(status = StatusCodes.RequestTimeout, entity = HttpEntity("Request timeout!")))
       finishActor
   }
 

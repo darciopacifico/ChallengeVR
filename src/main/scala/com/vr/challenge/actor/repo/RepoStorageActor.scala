@@ -73,28 +73,24 @@ class RepoStorageActor(val initialProperties: PropertyLot, val mapProvince: Map[
 
   /**
    * Get the provinces for a given lat long data
-   * @param lat
-   * @param long
+   * @param lat_x
+   * @param long_y
    * @return
    */
-  def getProvinces(lat: Int, long: Int): List[String] = {
+  def getProvinces(lat_x: Int, long_y: Int): List[String] = {
     def getProvinces(listProvinces: List[(String, Province)], agg: List[String]): List[String] = {
       listProvinces match {
         case (name, province) :: ps =>
           val b = province.boundaries
 
           val newAgg = if (
-
-            lat  >= b.upperLeft.x && lat <= b.bottomRight.x   &&
-            long <= b.upperLeft.y && long >= b.bottomRight.y
-
-          ) {
+            lat_x >= b.upperLeft.x && lat_x <= b.bottomRight.x &&
+              long_y >= b.bottomRight.y && long_y <= b.upperLeft.y) {
 
             name :: agg
           } else agg
 
           getProvinces(ps, newAgg)
-
         case Nil =>
           agg
       }
@@ -103,6 +99,15 @@ class RepoStorageActor(val initialProperties: PropertyLot, val mapProvince: Map[
     getProvinces(listProvinces, Nil)
   }
 
+  /**
+   * Busines rule for proeprty location. Spotippos only!
+   * @param property
+   */
+  def validateLocation(property: Property) = {
+    if (!(property.lat >= 0 && property.lat <= 1400) ||
+        !(property.long >= 0 && property.long <= 1000))
+      throw new RepoPropertyException("This property is not inside Spotippos!")
+  }
 
   /**
    * Create the new property and store locally
@@ -111,7 +116,7 @@ class RepoStorageActor(val initialProperties: PropertyLot, val mapProvince: Map[
    */
   def insertNewProperty(property: Property): PropertyProtocol.Property = {
 
-    //proper
+    validateLocation(property)
 
     val newId = idSequence.incrementAndGet()
     val provinces: List[String] = getProvinces(property.lat, property.long)

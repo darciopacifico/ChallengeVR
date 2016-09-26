@@ -55,8 +55,8 @@ object PropertyProtocol {
     require(baths >= 1 && baths <= 4, "The property should have between 1 and 5 baths")
     require(squareMeters >= 20 && squareMeters <= 240, "The property should have between 20 and 240 square meters")
 
-    require(lat >= 0 && lat <= 1400, "Lat is out of boundaries (0 to 1400)")
-    require(long >= 0 && long <= 1000, "Long is out of boundaries (0 to 1000)")
+    //require(lat >= 0 && lat <= 1400, "Lat is out of boundaries (0 to 1400)")
+    //require(long >= 0 && long <= 1000, "Long is out of boundaries (0 to 1000)")
 
   }
 

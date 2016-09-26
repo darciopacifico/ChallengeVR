@@ -9,17 +9,7 @@ import org.scalatest.{Matchers, FlatSpec}
  */
 class PropertyValidationTest  extends FlatSpec with Matchers {
 
-  "An invalid property creation " should "fail by invalid lat positioning" in {
-    a [IllegalArgumentException] should be thrownBy {
-      getValidProperty().copy(lat = -1)
-    }
-  }
-  it should "fail by invalid long positioning" in {
-    a [IllegalArgumentException] should be thrownBy {
-      getValidProperty().copy(long = -1)
-    }
-  }
-  it should "fail by invalid beds range" in {
+  "An invalid property creation " should "fail by invalid beds range" in {
     a [IllegalArgumentException] should be thrownBy {
       getValidProperty().copy(beds = 0)
     }
@@ -32,17 +22,6 @@ class PropertyValidationTest  extends FlatSpec with Matchers {
   it should "fail by invalid size range" in {
     a [IllegalArgumentException] should be thrownBy {
       getValidProperty().copy(squareMeters = 19)
-    }
-  }
-
-  it should "fail by invalid lat/long positioning again" in {
-    a [IllegalArgumentException] should be thrownBy {
-      getValidProperty().copy(lat = 1401)
-    }
-  }
-  it should "fail by invalid long positioning again" in {
-    a [IllegalArgumentException] should be thrownBy {
-      getValidProperty().copy(long = 1001)
     }
   }
   it should "fail by invalid beds range again" in {
