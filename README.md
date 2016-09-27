@@ -31,7 +31,7 @@ Translates the REST requests into business layer messages, routing them to the R
 
 Short life cycle actor, sticked to a single RequestContext object. Its responsability is to wait for the respective response message from business layer (or its own timeout), translate this into a REST response, and take an actor PoisonPill (literally). 
 
-*As a response for the property creation request, this actor will return a JSON containing the ID of the new property*.
+*As a response for the new property creation request, this actor will return a JSON containing the ID of the new property*.
 
 ### Business Layer
 
