@@ -9,7 +9,9 @@ Assembly the whole application using SBT Assembly plugin. This will compile and 
 Start the application as a regular java fat jar application. It will start a HTTP/REST service, listening to http://localhost:9090.
 
 > cd <APPLICATION_DIRECTORY>
+
 > sbt assembly
+
 > java -jar target/scala-2.11/VRChallenge.jar
 
 ## Design
