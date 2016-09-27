@@ -8,7 +8,7 @@ Emulates a simple REST service for Property Registration. Uses Scala, Spray and 
 Assembly the whole application using SBT Assembly plugin. This will compile and execute all unit tests before.
 Start the application as a regular java fat jar application. It will start a HTTP/REST service, listening to http://localhost:9090.
 
-> cd <APPLICATION_DIRECTORY>
+> cd \<APPLICATION_DIRECTORY\>
 
 > sbt assembly
 
