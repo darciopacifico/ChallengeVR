@@ -18,8 +18,8 @@ trait RepoFacadeSupervisor extends Actor with ActorLogging {
     context.actorOf(RepoStorageActor.props(lot, mapProvinces), name = "RepoStorageActor")
 
 
-  def createGeoIndexedActor(ref: ActorRef, lot: PropertyLot): ActorRef = {
-    context.actorOf(RepoGeoIndexedActor.props(ref, lot), name = "RepoGeoIndexedActor")
+  def createGeoIndexedActor(ref: ActorRef, lot: PropertyLot, mapProvinces: Map[String, Province]): ActorRef = {
+    context.actorOf(RepoGeoIndexedActor.props(ref, lot, mapProvinces), name = "RepoGeoIndexedActor")
   }
 
 }

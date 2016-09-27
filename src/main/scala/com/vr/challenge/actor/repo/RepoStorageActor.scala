@@ -18,7 +18,7 @@ import scala.util.{Failure, Success, Try}
  * Created by darcio on 9/24/16.
  */
 class RepoStorageActor(val initialProperties: PropertyLot, val mapProvince: Map[String, Province]) extends Actor with ActorLogging {
-
+  import RepoStorageActor._
 
   //due to small amount of provinces i'll not try to optimize the search
   val listProvinces: List[(String, Province)] = this.mapProvince.toList
@@ -70,36 +70,7 @@ class RepoStorageActor(val initialProperties: PropertyLot, val mapProvince: Map[
    * @return
    */
   def loadMapOfproperties(lot: PropertyLot) =
-    mutable.Map[Int, Property]() ++ lot.properties.map(p => p.id.get -> p.copy(provinces = Some(getProvinces(p.lat, p.long)))).toMap
-
-
-  /**
-   * Get the provinces for a given lat long data
-   * @param lat_x
-   * @param long_y
-   * @return
-   */
-  def getProvinces(lat_x: Int, long_y: Int): List[String] = {
-    def getProvinces(listProvinces: List[(String, Province)], agg: List[String]): List[String] = {
-      listProvinces match {
-        case (name, province) :: ps =>
-          val b = province.boundaries
-
-          val newAgg = if (
-            lat_x >= b.upperLeft.x && lat_x <= b.bottomRight.x &&
-              long_y >= b.bottomRight.y && long_y <= b.upperLeft.y) {
-
-            name :: agg
-          } else agg
-
-          getProvinces(ps, newAgg)
-        case Nil =>
-          agg
-      }
-    }
-
-    getProvinces(listProvinces, Nil)
-  }
+    mutable.Map[Int, Property]() ++ lot.properties.map(p => p.id.get -> p.copy(provinces = Some(getProvinces(listProvinces, p.lat, p.long)))).toMap
 
   /**
    * Busines rule for proeprty location. Spotippos only!
@@ -121,7 +92,7 @@ class RepoStorageActor(val initialProperties: PropertyLot, val mapProvince: Map[
     validateLocation(property)
 
     val newId = idSequence.incrementAndGet()
-    val provinces: List[String] = getProvinces(property.lat, property.long)
+    val provinces: List[String] = getProvinces(listProvinces, property.lat, property.long)
     val newProp = property.copy(id = Some(newId), provinces = Some(provinces))
 
     mapPropById(newId) = newProp
@@ -144,4 +115,34 @@ object RepoStorageActor{
             case _: Exception => Restart
           }))
 
+
+
+  /**
+   * Get the provinces for a given lat long data
+   * @param lat_x
+   * @param long_y
+   * @return
+   */
+  def getProvinces( listProvinces: List[(String, Province)], lat_x: Int, long_y: Int): List[String] = {
+    def getProvinces(listProvinces: List[(String, Province)], agg: List[String]): List[String] = {
+      listProvinces match {
+        case (name, province) :: ps =>
+          val b = province.boundaries
+
+          val newAgg = if (
+            lat_x >= b.upperLeft.x && lat_x <= b.bottomRight.x &&
+              long_y >= b.bottomRight.y && long_y <= b.upperLeft.y) {
+
+            name :: agg
+          } else agg
+
+          getProvinces(ps, newAgg)
+        case Nil =>
+          agg
+      }
+    }
+
+    getProvinces(listProvinces, Nil)
+  }
 }
+

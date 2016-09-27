@@ -8,14 +8,14 @@ import com.vr.challenge.protocol.PropertyProtocol._
 import edu.wlu.cs.levy.CG.KDTree
 
 import scala.collection.JavaConverters._
-import scala.collection.mutable
+import scala.collection.{Map, mutable}
 import scala.concurrent.Future
 
 /**
  *
  * Created by darcio on 9/24/16.
  */
-class RepoGeoIndexedActor(repoActor: ActorRef, initialProperties: PropertyLot) extends Actor with ActorLogging {
+class RepoGeoIndexedActor(repoActor: ActorRef, initialProperties: PropertyLot, mapProvince: Map[String, Province]) extends Actor with ActorLogging {
   val geolocationProperties = new KDTree[mutable.Set[Property]](2)
 
   indexByGeolocation(initialProperties.properties: _*)
@@ -47,12 +47,15 @@ class RepoGeoIndexedActor(repoActor: ActorRef, initialProperties: PropertyLot) e
    * This operation could not be called in parallel
    * @param properties
    */
-  def indexByGeolocation(properties: Property*) =
+  def indexByGeolocation(properties: Property*) = {
+    val listProvinces: List[(String, Province)] = this.mapProvince.toList
     properties.foreach { property =>
+      val provinces = RepoStorageActor.getProvinces(listProvinces, property.lat, property.long)
       val coords = Array(property.lat.toDouble, property.long.toDouble)
       val setProperties = getSetOfProperties(coords)
-      setProperties += property
+      setProperties += property.copy(provinces = Some(provinces))
     }
+  }
 
   /**
    * Get the set of properties for a given latlong coordinates
@@ -76,7 +79,7 @@ class RepoGeoIndexedActor(repoActor: ActorRef, initialProperties: PropertyLot) e
  * Companion object, containing the props definition
  */
 object RepoGeoIndexedActor {
-  def props(ref: ActorRef, lot: PropertyLot) = Props(new RepoGeoIndexedActor(ref, lot))
+  def props(ref: ActorRef, lot: PropertyLot, mapProvince: Map[String, Province]) = Props(new RepoGeoIndexedActor(ref, lot, mapProvince))
     .withRouter(
       RoundRobinPool(
         nrOfInstances = 6,

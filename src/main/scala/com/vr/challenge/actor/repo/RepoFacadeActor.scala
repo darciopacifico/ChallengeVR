@@ -12,7 +12,7 @@ import scala.collection.Map
 class RepoFacadeActor(val propertyLot: PropertyLot, val mapProvinces: Map[String, Province]) extends RepoFacadeSupervisor {
 
   val storageActor = createStorageActor(propertyLot, mapProvinces)
-  val geoIndexedActor = createGeoIndexedActor(storageActor, propertyLot)
+  val geoIndexedActor = createGeoIndexedActor(storageActor, propertyLot, mapProvinces)
 
   /**
    * Receive and route specialized actor
