@@ -23,7 +23,10 @@ object PropertyProtocol {
 
   case class PropertyByIdReply(optProp: Option[Property])
 
-  case class PropertyByGeo(ax: Int, ay: Int, bx: Int, by: Int, replyTo: ActorRef)
+  case class PropertyByGeo(ax: Int, ay: Int, bx: Int, by: Int, replyTo: ActorRef){
+    //require(ay>=by,"Invalid coordinate definition!")
+    //require(bx>=ax,"Invalid coordinate definition!")
+  }
 
   case class PropertyByGeoReply(propertyLot: PropertyLot)
 
