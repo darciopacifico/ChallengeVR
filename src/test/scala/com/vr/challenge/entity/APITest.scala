@@ -74,7 +74,7 @@ class APITest extends Specification with Specs2RouteTest with HttpService with A
       }
     }
     "return another all 114 properties around ax=122&ay=344&bx=252&by=474" in {
-      Get("/properties?ax=122&ay=344&bx=252&by=474") ~> routes ~> check {
+      Get("/properties?ax=122&ay=474&bx=252&by=344") ~> routes ~> check {
         val propertyLot: PropertyLot = responseAs[PropertyLot]
         propertyLot.totalProperties === 114
         propertyLot.properties.head.price === 641000

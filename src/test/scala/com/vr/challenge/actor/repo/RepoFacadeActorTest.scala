@@ -64,8 +64,8 @@ class RepoFacadeActorTest extends TestKit(ActorSystem("TestKitUsageSpec")) with 
       theNewProp.provinces.get should contain only "Scavy"
     }
 
-    "find the new inserted Property in the region 199,299 x 201,301 " in {
-      repoFacadeActor ! PropertyByGeo(199, 299, 201, 301, self)
+    "find the new inserted Property in the region 199, 301, 201, 299 " in {
+      repoFacadeActor ! PropertyByGeo(199, 301, 201, 299, self)
       val reply = expectMsgClass(classOf[PropertyByGeoReply])
       val newProp: Property = reply.propertyLot.properties.head
 
