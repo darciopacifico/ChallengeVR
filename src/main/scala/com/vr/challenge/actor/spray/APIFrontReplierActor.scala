@@ -52,3 +52,11 @@ class APIFrontReplierActor(reqCtx: RequestContext, timeout: FiniteDuration) exte
     self ! PoisonPill
   }
 }
+
+/**
+ * Companion object, containing the props definition
+ */
+object APIFrontReplierActor {
+  def props(requestContext: RequestContext, timeout: FiniteDuration) =
+    Props(new APIFrontReplierActor(requestContext, timeout))
+}

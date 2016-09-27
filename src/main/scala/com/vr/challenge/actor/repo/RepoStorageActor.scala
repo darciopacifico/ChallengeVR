@@ -2,8 +2,10 @@ package com.vr.challenge.actor.repo
 
 import java.util.concurrent.atomic.AtomicInteger
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Terminated}
+import akka.actor.SupervisorStrategy.{Restart, Stop}
+import akka.actor._
 import akka.pattern.pipe
+import akka.routing.RoundRobinPool
 import com.vr.challenge.protocol.PropertyProtocol
 import com.vr.challenge.protocol.PropertyProtocol._
 
@@ -125,4 +127,21 @@ class RepoStorageActor(val initialProperties: PropertyLot, val mapProvince: Map[
     mapPropById(newId) = newProp
     newProp
   }
+}
+
+/**
+ * Companion object, containing the props definition
+ */
+
+object RepoStorageActor{
+  def props(lot: PropertyLot, mapProvinces: Map[String, Province]) = Props(new RepoStorageActor(lot, mapProvinces))
+    .withRouter(
+      RoundRobinPool(
+        nrOfInstances = 1,
+        supervisorStrategy =
+          OneForOneStrategy(maxNrOfRetries = 10) {
+            case _: ActorInitializationException => Stop
+            case _: Exception => Restart
+          }))
+
 }

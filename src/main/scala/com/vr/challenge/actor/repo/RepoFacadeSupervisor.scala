@@ -14,28 +14,12 @@ import scala.collection.Map
  */
 trait RepoFacadeSupervisor extends Actor with ActorLogging {
 
-  def createStorageActor(lot: PropertyLot, mapProvinces: Map[String, Province]): ActorRef = {
-    context.actorOf(Props(new RepoStorageActor(lot, mapProvinces))
-      .withRouter(
-        RoundRobinPool(
-          nrOfInstances = 1,
-          supervisorStrategy =
-            OneForOneStrategy(maxNrOfRetries = 10) {
-              case _: ActorInitializationException => Stop
-              case _: Exception => Restart
-            })),name="RepoStorageActor")
-  }
+  def createStorageActor(lot: PropertyLot, mapProvinces: Map[String, Province]) =
+    context.actorOf(RepoStorageActor.props(lot, mapProvinces), name = "RepoStorageActor")
+
 
   def createGeoIndexedActor(ref: ActorRef, lot: PropertyLot): ActorRef = {
-    context.actorOf(Props(new RepoGeoIndexedActor(ref, lot))
-      .withRouter(
-        RoundRobinPool(
-          nrOfInstances = 6,
-          supervisorStrategy =
-            OneForOneStrategy(maxNrOfRetries = 10) {
-              case _: ActorInitializationException => Stop
-              case _: Exception => Restart
-            })),name = "RepoGeoIndexedActor")
+    context.actorOf(RepoGeoIndexedActor.props(ref, lot), name = "RepoGeoIndexedActor")
   }
 
 }

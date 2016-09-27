@@ -1,7 +1,9 @@
 package com.vr.challenge.actor.repo
 
-import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.actor.SupervisorStrategy.{Restart, Stop}
+import akka.actor._
 import akka.pattern._
+import akka.routing.RoundRobinPool
 import com.vr.challenge.protocol.PropertyProtocol._
 import edu.wlu.cs.levy.CG.KDTree
 
@@ -70,3 +72,17 @@ class RepoGeoIndexedActor(repoActor: ActorRef, initialProperties: PropertyLot) e
 }
 
 
+/**
+ * Companion object, containing the props definition
+ */
+object RepoGeoIndexedActor {
+  def props(ref: ActorRef, lot: PropertyLot) = Props(new RepoGeoIndexedActor(ref, lot))
+    .withRouter(
+      RoundRobinPool(
+        nrOfInstances = 6,
+        supervisorStrategy =
+          OneForOneStrategy(maxNrOfRetries = 10) {
+            case _: ActorInitializationException => Stop
+            case _: Exception => Restart
+          }))
+}

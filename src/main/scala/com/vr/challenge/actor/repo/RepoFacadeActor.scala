@@ -29,5 +29,11 @@ class RepoFacadeActor(val propertyLot: PropertyLot, val mapProvinces: Map[String
     case msg: PropertyByGeo =>
       geoIndexedActor ! msg
   }
+}
 
+/**
+ * Companion object, containing the props definition
+ */
+object RepoFacadeActor {
+  def props(lot: PropertyLot, mapProvinces: Map[String, Province]) = Props(new RepoFacadeActor(lot, mapProvinces))
 }
