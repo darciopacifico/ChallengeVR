@@ -44,8 +44,8 @@ class RepoFacadeActorTest extends TestKit(ActorSystem("TestKitUsageSpec")) with 
       assert(reply.optProp.isEmpty)
     }
 
-    "find nothing in the region 199,299 x 201,301 " in {
-      repoFacadeActor ! PropertyByGeo(199, 299, 201, 301, self)
+    "find nothing in the region 199, 301, 201, 299 " in {
+      repoFacadeActor ! PropertyByGeo(199, 301, 201, 299, self)
       val reply = expectMsgClass(classOf[PropertyByGeoReply])
       assert(reply.propertyLot.totalProperties == 0)
       assert(reply.propertyLot.properties.isEmpty)

@@ -45,7 +45,7 @@ class APITestTimeout extends Specification with Specs2RouteTest with HttpService
       }
     }
     "handle timeout for range search" in {
-      Get("/properties?ax=122&ay=344&bx=252&by=474") ~> routes ~> check {
+      Get("/properties?ax=122&ay=474&bx=252&by=344") ~> routes ~> check {
         status === StatusCodes.RequestTimeout
       }
     }
