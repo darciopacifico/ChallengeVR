@@ -12,7 +12,7 @@ resolvers ++= Seq(
 
 libraryDependencies ++= {
   val akkaVersion       = "2.4.4"
-  val sprayVersion      = "1.3.2"
+  val sprayVersion      = "1.3.3"
   val json4sV           = "3.3.0"
   val scalaTestV        = "2.2.4"
   val swaggerV          = "0.7.2"
@@ -25,8 +25,7 @@ libraryDependencies ++= {
     "org.scalatest"         %% "scalatest"       % scalaTestV   % "test",
     "org.json4s"            %% "json4s-jackson"  % json4sV,
     "org.json4s"            %% "json4s-ext"      % json4sV,
-    "com.typesafe.akka"     %% "akka-slf4j"      % akkaVersion,
-    "ch.qos.logback"        %  "logback-classic" % "1.1.2",
+    "com.tyEbck"        %  "logback-classic" % "1.1.2",
     "com.typesafe.akka"     %% "akka-testkit"    % akkaVersion  % "test",
     "io.spray"              %% "spray-testkit"   % sprayVersion % "test",
     "org.specs2"            %% "specs2"          % "2.3.13"     % "test"

@@ -5,7 +5,6 @@ import javax.ws.rs.Path
 
 import akka.actor._
 import akka.util.Timeout
-import com.github.swagger.spray.SwaggerHttpService
 import com.vr.challenge.actor.repo.RepoFacadeActor
 import com.vr.challenge.protocol.PropertyProtocol._
 import io.swagger.annotations._
@@ -24,26 +23,13 @@ class APIFrontActor(lot: PropertyLot, mapProvinces: Map[String, Province]) exten
   val repoFacadeActor = context.actorOf(Props(new RepoFacadeActor(lot, mapProvinces)),name = "repoFacadeActor")
   val actorContext = context
 
-
-  val swaggerRoute = new SwaggerHttpService {
-    implicit def actorRefFactory = actorContext
-    override val apiTypes = Seq(ru.typeOf[APIFrontActorTrait])
-    override val host = "localhost:9090" //the url of your api, not swagger's json endpoint
-  }.routes
-
-
-
-  def receive = runRoute(routes /*~ swaggerRoute*/)
-
-
+  def receive = runRoute(routes)
 }
 
 /**
  * Testable trait containing the route for Rest API.
  * Spray http actor to handle requests.
  */
-//@Path("/properties")
-//@Api(value = "/properties")
 trait APIFrontActorTrait extends HttpService {
   val DEFAULT_REQUEST_TIMEOUT: FiniteDuration = FiniteDuration(3, TimeUnit.SECONDS)
   implicit val timeout = Timeout(10 seconds)
@@ -55,9 +41,6 @@ trait APIFrontActorTrait extends HttpService {
   /**
    * REST routing patterns
    */
-  //@ApiOperation(httpMethod = "GET", response = classOf[Property], value = "Returns a Property based on ID")
-  //@ApiImplicitParams(Array(new ApiImplicitParam(name = "id", required = false, dataType = "integer", paramType = "path", value = "ID of Property that needs to be fetched")))
-  //@ApiResponses(Array(new ApiResponse(code = 400, message = "Invalid ID Supplied"), new ApiResponse(code = 404, message = "Property not found")))
   def routes: Route =
     pathPrefix("properties") {
       post {
@@ -91,6 +74,5 @@ trait APIFrontActorTrait extends HttpService {
    */
   def replyTo(requestContext: RequestContext, timeout: FiniteDuration): ActorRef =
     actorContext.actorOf(Props(new APIFrontReplierActor(requestContext, timeout)))
-
 
 }
