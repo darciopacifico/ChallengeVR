@@ -1,12 +1,15 @@
 ChallengeVR
 ===================
 
-Emulates a simple REST service for Property Registration. Uses Scala, Spray and Akka frameworks for a simple actor model based, reactive design approach.
+Emulates a simple REST service for Property Registration System.
+
+Uses Scala, Spray and Akka frameworks for a simple actor model based, reactive design approach.
 
 ## How to Execute the Solution:
 
-Assembly the whole application using SBT Assembly plugin. This will compile and execute all unit tests before.
+Assembly the whole application using SBT Assembly. This will compile and execute all unit tests before.
 Start the application as a regular java fat jar application. It will start a HTTP/REST service, listening to http://localhost:9090.
+
 
 > cd \<APPLICATION_DIRECTORY\>
 
@@ -14,7 +17,9 @@ Start the application as a regular java fat jar application. It will start a HTT
 
 > java -jar target/scala-2.11/VRChallenge.jar
 
-## Design
+
+
+## Design Rationale
 
 ### REST Layer:
 
