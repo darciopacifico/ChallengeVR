@@ -7,7 +7,6 @@
 .history
 gen
 bin
-project
 **/*.swp
 **/*~.nib
 **/build/
