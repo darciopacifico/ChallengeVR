@@ -21,7 +21,7 @@ Start the application as a regular java fat jar application. It will start a HTT
 
 ### REST Layer:
 
-**APIFrontActor**: Create dedicateds instances of APIFrontReplierActors, to process the future responses to every request. 
+**APIFrontActor**: Create dedicated instances of APIFrontReplierActors, to process the future responses to every request. 
 
 Translates the REST requests into business layer messages, routing them to the RepoFacadeActor along with a fresh new reference to a APIFrontReplierActor.
 
