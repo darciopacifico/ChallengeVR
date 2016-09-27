@@ -1,26 +1,23 @@
 package com.vr.challenge.actor.spray
 
 import java.util.concurrent.TimeUnit
-import javax.ws.rs.Path
 
 import akka.actor._
 import akka.util.Timeout
 import com.vr.challenge.actor.repo.RepoFacadeActor
 import com.vr.challenge.protocol.PropertyProtocol._
-import io.swagger.annotations._
 import spray.httpx.SprayJsonSupport._
 import spray.routing._
 
-import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.language.postfixOps
-import scala.reflect.runtime.{universe=>ru}
+
 /**
  * (Not Spray-test-kit testable) Http actor implementation
  * @param lot
  */
 class APIFrontActor(lot: PropertyLot, mapProvinces: Map[String, Province]) extends HttpServiceActor with APIFrontActorTrait {
-  val repoFacadeActor = context.actorOf(Props(new RepoFacadeActor(lot, mapProvinces)),name = "repoFacadeActor")
+  val repoFacadeActor = context.actorOf(Props(new RepoFacadeActor(lot, mapProvinces)), name = "repoFacadeActor")
   val actorContext = context
 
   def receive = runRoute(routes)
@@ -48,14 +45,14 @@ trait APIFrontActorTrait extends HttpService {
           repoFacadeActor ! PropertyCreate(property, replyTo(requestContext))
         }
       } ~
-      path(IntNumber) { id => requestContext =>
-        repoFacadeActor ! PropertyById(id, replyTo(requestContext))
-      } ~
-      parameters('ax.as[Int], 'ay.as[Int], 'bx.as[Int], 'by.as[Int]) { (ax, ay, bx, by) =>
-        get { ctx =>
-          repoFacadeActor ! PropertyByGeo(ax, ay, bx, by, replyTo(ctx))
+        path(IntNumber) { id => requestContext =>
+          repoFacadeActor ! PropertyById(id, replyTo(requestContext))
+        } ~
+        parameters('ax.as[Int], 'ay.as[Int], 'bx.as[Int], 'by.as[Int]) { (ax, ay, bx, by) =>
+          get { ctx =>
+            repoFacadeActor ! PropertyByGeo(ax, ay, bx, by, replyTo(ctx))
+          }
         }
-      }
     }
 
   /**
