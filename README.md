@@ -1,9 +1,7 @@
 ChallengeVR
 ===================
 
-Emulates a simple REST service for Property Registration System.
-
-Uses Scala, Spray and Akka frameworks for a simple actor model based, reactive design approach.
+Emulates a simple REST service for a Property Registration System, using Scala, Spray and Akka frameworks for a simple actor model based, reactive design approach.
 
 ## How to Execute the Solution:
 
