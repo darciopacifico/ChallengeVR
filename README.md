@@ -5,7 +5,7 @@ Emulates a simple REST service for a Property Registration System, using Scala, 
 
 ## How to Execute the Solution:
 
-Assembly the whole application using SBT Assembly. This will compile and execute all unit tests before.
+Assemble the whole application using SBT Assembly. This will compile and execute all unit tests before.
 Start the application as a regular java fat jar application. It will start a HTTP/REST service, listening to http://localhost:9090.
 
 
